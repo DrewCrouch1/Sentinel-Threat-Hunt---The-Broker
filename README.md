@@ -166,6 +166,14 @@ A scheduled task named “MicrosoftEdgeUpdateCheck” is created to run the prev
 <img width="1475" height="73" alt="Screenshot 2026-02-24 220037" src="https://github.com/user-attachments/assets/30740e41-92b9-4ab5-b610-903b75b9a721" />
 
 ## Credential Theft Detection
+
+KQL User
+
+DeviceProcessEvents
+| where FileName == "reg.exe" 
+| where ProcessCommandLine has_any ("save HKLM\\SYSTEM","save HKLM\\SAM")
+| project Timestamp, FileName, ProcessCommandLine, InitiatingProcessFileName
+
 HKLM System and Sam are saved to C:\Users\Public.
 
 These files were likely extracted to crack the local accounts and password hashes offline.
@@ -279,7 +287,11 @@ Windows PowerShell
 
 Using:
 
-wevtutil cl
+wevtutil cl Security
+wevtutil cl System
+wevtutil cl Application
+wevtutil cl Windows PowerShell
+
 Conclusion
 
 Indicator removal on host (MITRE T1070).
@@ -287,16 +299,21 @@ Indicator removal on host (MITRE T1070).
 <img width="1255" height="247" alt="Screenshot 2026-02-24 210451" src="https://github.com/user-attachments/assets/9b3f6512-6540-43f9-98e4-5c9c1c27e455" />
 
 ## MITRE ATT&CK Mapping
-Tactic	Technique
-Initial Access	T1566 – Phishing
-Execution	T1059 – Command & Scripting Interpreter
-Discovery	T1082 – System Information Discovery
-Persistence T1053 - Scheduled Task/Job
-Credential Access	T1003 – Credential Dumping
-Lateral Movement	T1021 – Remote Services
-Collection	T1560 – Archive Collected Data
-Defense Evasion	T1070 – Indicator Removal
-Command & Control	T1071 – Application Layer Protocol
+| Tactic            | Technique                      | Evidence                      |
+| ----------------- | ------------------------------ | ----------------------------- |
+| Initial Access    | T1566 – Phishing               | User executed disguised PDF   |
+| Execution         | T1059 – Command Interpreter    | cmd.exe, certutil, PowerShell |
+| Persistence       | T1053.005 – Scheduled Task     | RuntimeBroker.exe scheduling  |
+| Persistence       | T1136 – Create Account         | svc_backup account creation   |
+| Persistence       | T1219 – Remote Access Software | AnyDesk install/use           |
+| Credential Access | T1003 – Credential Dumping     | SAM/SYSTEM export             |
+| Credential Access | T1550.002 – Pass the Hash      | Potential later use           |
+| Discovery         | T1082 – System Info Discovery  | whoami/hostname/net commands  |
+| Lateral Movement  | T1021 – Remote Services        | RDP via mstsc.exe             |
+| Collection        | T1560 – Archive Collected Data | Shares.7z                     |
+| Defense Evasion   | T1070 – Indicator Removal      | wevtutil log clearing         |
+| Command & Control | T1071 – HTTPS                  | Outbound C2 to 104.21.30.237  |
+
 
 ## Full Attack Chain Summary
 
