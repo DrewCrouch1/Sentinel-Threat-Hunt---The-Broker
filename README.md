@@ -2,7 +2,7 @@
 
 Author: Andrew Crouch  
 Platform: Microsoft Defender for Endpoint + Microsoft Sentinel  
-Environment: Azure VM Lab  
+Environment: Live Azure Lab Open To The Internet
 Focus: Threat Hunting, Detection Engineering, Incident Reconstruction  
 
 ---
